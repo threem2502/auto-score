@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chấm bài thi trắc nghiệm</title>
+    <link rel="icon" type="image/x-icon" href="https://kenh14cdn.com/thumb_w/600/2018/7/17/photo1531839385174-15318393851761116816339.jpeg">
+    <link rel="stylesheet" href='/static/index.css'>
+</head>
+<body>
+    <div id="wrapper">
+        <div class="header">
+            <img class="logo" src="https://kenh14cdn.com/thumb_w/600/2018/7/17/photo1531839385174-15318393851761116816339.jpeg" alt="">
+            <h1  class="title">Chấm Trắc Nghiệm</h1>
+            <a href="#" class="nav-item">Home</a>
+        </div>
+        <div class="main-content">
+            <div class="content-left">
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+                    <div class="upload">
+                        <h3 class="name">Tải ảnh lên</h3>
+                        <input type="file" name="img_file" id="img_file" required>
+                    </div>
+                    <div class="upload">
+                        <h3 class="name">Tải file đáp án</h3>
+                        <input type="file" name="result_file" id="result_file" required>
+                    </div>
+                    <span></span>
+                    <button type="submit">Chấm bài</button>
+                </form>
+
+            </div>
+            <div class="content-right">
+                <img class="avatar" src="https://api-private.atlassian.com/users/44156fc2f397fb71d88518f042652bfd/avatar" alt="">
+                <div class="infor">
+                    <p  id="sbd"><b>Số báo danh: </b></p>
+                    <p  id="md"><b>Mã đề: </b> </p>
+                    <p  id="score"><b>Điểm: </b></p>
+                    <p id="incorect""><b>Các câu sai: </b></p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <script>
+        // Hàm để cập nhật kết quả vào "infor"
+        function updateInfor(score, sbd, ma_de, cau_sai) {
+            document.getElementById("score").innerHTML = "<b>Điểm: </b>" + score;
+            document.getElementById("sbd").innerHTML = "<b>Số báo danh: </b>" + sbd;
+            document.getElementById("md").innerHTML = "<b>Mã đề: </b>" + ma_de;
+            document.getElementById("incorect").innerHTML = "<b>Các câu sai: </b>" + cau_sai;
+        }
+
+        // Xử lý khi nhấn nút "Chấm bài" và nhận kết quả từ máy chủ
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Gửi yêu cầu POST để tải ảnh và kết quả lên máy chủ
+            var form = e.target;
+            var formData = new FormData(form);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.error) {
+                    console.log(data.error);
+                } else {
+                    // Cập nhật kết quả vào "infor"
+                    updateInfor(data.score, data.sbd, data.ma_de, data.cau_sai);
+                }
+            })
+            .catch(function(error) {
+                console.error('Lỗi:', error);
+            });
+        });
+    </script>
+</body>
+</html>
